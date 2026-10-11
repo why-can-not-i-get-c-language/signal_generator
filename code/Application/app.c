@@ -14,14 +14,14 @@ static uint32_t stage_start_ms;
 static const SgWaveform test_waveforms[] = {SG_SINE, SG_TRIANGLE, SG_SQUARE};
 #endif
 #if BOARD_DDS_CYCLE_FREQUENCIES
-/* 补测低、高频边界；保留 1kHz 作为中间对照。 */
-static const uint32_t test_frequencies_hz[] = {10U, 1000U, 100000U};
+/* 高频观察：1kHz 对照、100kHz、1MHz，不代表最终波形质量达标。 */
+static const uint32_t test_frequencies_hz[] = {1000U, 100000U, 1000000U};
 #endif
 
 static void ShowStage(uint32_t now_ms)
 {
     /* 每两秒一组，闪 1/2/3 次表示测试表中的第 1/2/3 项。
-     * 当前频率测试对应 10Hz/1kHz/100kHz；不代表实物已测量通过。 */
+     * 当前频率测试对应 1kHz/100kHz/1MHz；不代表实物已测量通过。 */
     const uint32_t elapsed = (uint32_t)(now_ms - stage_start_ms) % 2000U;
     const uint32_t pulses = (uint32_t)stage_index + 1U;
     BoardLed_Set((uint8_t)(elapsed < pulses * 300U && elapsed % 300U < 120U));
