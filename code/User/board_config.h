@@ -12,9 +12,13 @@
 /* 仅台架测试：两秒后自动输出，正式整机必须关闭。 */
 #define BOARD_DDS_BENCH_TEST 1
 #define BOARD_DDS_TEST_HZ 1000UL
-/* 置 0 可恢复固定正弦测试；循环模式下每种波形保持 20 秒。 */
-#define BOARD_DDS_CYCLE_WAVEFORMS 1
-#define BOARD_DDS_WAVE_HOLD_MS 20000UL
+/* 两种循环只能选一种；都置 0 时恢复 BOARD_DDS_TEST_HZ 固定正弦。 */
+#define BOARD_DDS_CYCLE_WAVEFORMS 0
+#define BOARD_DDS_CYCLE_FREQUENCIES 1
+#define BOARD_DDS_STAGE_HOLD_MS 20000UL
+#if BOARD_DDS_CYCLE_WAVEFORMS && BOARD_DDS_CYCLE_FREQUENCIES
+#error "Select only one DDS bench cycle"
+#endif
 #define BOARD_I2C_PINS_ASSIGNED 0
 #define BOARD_INPUT_PINS_ASSIGNED 0
 #define BOARD_ANALOG_CONTROL_PINS_ASSIGNED 0
