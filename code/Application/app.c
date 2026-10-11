@@ -4,7 +4,51 @@
 #include "board_led.h"
 #include "led_test.h"
 #include "stm32f1xx_hal.h"
+#include "i2c_bus.h"
 
+#if BOARD_OLED_PROBE_TEST
+static SgStatus probe_status = SG_NOT_READY;
+static uint8_t probe_flashes;
+static uint32_t probe_start_ms;
+
+SgStatus App_Init(void)
+{
+    BoardLed_Init();
+    HAL_Delay(100U);
+    /* 保持已接的 DDS 处于复位状态，本轮不自动输出波形。 */
+    probe_status = Ad9833_Init();
+    if (probe_status != SG_OK) { return probe_status; }
+    probe_status = I2cBus_Init();
+    if (probe_status != SG_OK) { return probe_status; }
+    const SgStatus result_3c = I2cBus_Probe(0x3CU);
+    if (result_3c != SG_OK && result_3c != SG_IO_ERROR)
+    { probe_status = result_3c; return probe_status; }
+    const SgStatus result_3d = I2cBus_Probe(0x3DU);
+    if (result_3d != SG_OK && result_3d != SG_IO_ERROR)
+    { probe_status = result_3d; return probe_status; }
+    const uint8_t mask = (uint8_t)((result_3c == SG_OK ? 1U : 0U) |
+        (result_3d == SG_OK ? 2U : 0U));
+    /* 1闪=3C，2闪=3D，3闪=都未应答，4闪=两个地址均应答。 */
+    probe_flashes = mask == 1U ? 1U : mask == 2U ? 2U : mask == 0U ? 3U : 4U;
+    probe_start_ms = HAL_GetTick();
+    probe_status = SG_OK;
+    return probe_status;
+}
+
+SgStatus App_Update(uint32_t now_ms)
+{
+    if (probe_status != SG_OK)
+    {
+        /* 连续快闪：总线未就绪/超时或初始化失败，不能当作无设备。 */
+        BoardLed_Set((uint8_t)((now_ms / 100U) & 1U));
+        return probe_status;
+    }
+    const uint32_t elapsed = (uint32_t)(now_ms - probe_start_ms) % 2000U;
+    BoardLed_Set((uint8_t)(elapsed < (uint32_t)probe_flashes * 300U &&
+        elapsed % 300U < 120U));
+    return SG_OK;
+}
+#else
 static SgStatus status = SG_NOT_READY;
 static uint32_t start_ms;
 static uint8_t output_started;
@@ -99,3 +143,4 @@ SgStatus App_Update(uint32_t now_ms)
     }
     return status;
 }
+#endif

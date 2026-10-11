@@ -10,16 +10,24 @@
 #define BOARD_POT_GPIO GPIOB
 #define BOARD_POT_CS_PIN GPIO_PIN_0
 /* 仅台架测试：两秒后自动输出，正式整机必须关闭。 */
-#define BOARD_DDS_BENCH_TEST 1
+#define BOARD_DDS_BENCH_TEST 0
 #define BOARD_DDS_TEST_HZ 1000UL
 /* 两种循环只能选一种；都置 0 时恢复 BOARD_DDS_TEST_HZ 固定正弦。 */
 #define BOARD_DDS_CYCLE_WAVEFORMS 0
-#define BOARD_DDS_CYCLE_FREQUENCIES 1
+#define BOARD_DDS_CYCLE_FREQUENCIES 0
 #define BOARD_DDS_STAGE_HOLD_MS 20000UL
 #if BOARD_DDS_CYCLE_WAVEFORMS && BOARD_DDS_CYCLE_FREQUENCIES
 #error "Select only one DDS bench cycle"
 #endif
-#define BOARD_I2C_PINS_ASSIGNED 0
+#define BOARD_I2C_PINS_ASSIGNED 1
+#define BOARD_I2C_GPIO GPIOB
+#define BOARD_I2C_SCL_PIN GPIO_PIN_6
+#define BOARD_I2C_SDA_PIN GPIO_PIN_7
+/* 本轮只检查应答，不发送屏幕初始化或显示数据。 */
+#define BOARD_OLED_PROBE_TEST 1
+#if BOARD_OLED_PROBE_TEST && BOARD_DDS_BENCH_TEST
+#error "Select only one active bench test"
+#endif
 #define BOARD_INPUT_PINS_ASSIGNED 0
 #define BOARD_ANALOG_CONTROL_PINS_ASSIGNED 0
 #endif
