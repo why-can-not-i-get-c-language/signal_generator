@@ -1,10 +1,18 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
-/* 已确认 MCU 与 LED；其余模块引脚尚未分配，不填写猜测值。 */
+/* 本轮软件分配；用户按接线表连接实物。 */
 #define BOARD_DDS_CLOCK_HZ 25000000UL
-#define BOARD_SPI_PINS_ASSIGNED 0
+#define BOARD_SPI_PINS_ASSIGNED 1
+#define BOARD_SPI_GPIO GPIOA
+#define BOARD_SPI_CLK_PIN GPIO_PIN_5
+#define BOARD_SPI_DATA_PIN GPIO_PIN_7
+#define BOARD_DDS_FSYNC_PIN GPIO_PIN_4
+#define BOARD_POT_GPIO GPIOB
+#define BOARD_POT_CS_PIN GPIO_PIN_0
+/* 仅台架测试：两秒后自动输出，正式整机必须关闭。 */
+#define BOARD_DDS_BENCH_TEST 1
+#define BOARD_DDS_TEST_HZ 1000UL
 #define BOARD_I2C_PINS_ASSIGNED 0
 #define BOARD_INPUT_PINS_ASSIGNED 0
 #define BOARD_ANALOG_CONTROL_PINS_ASSIGNED 0
 #endif
-

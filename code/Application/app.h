@@ -2,8 +2,7 @@
 #define APP_H
 #include "sg_types.h"
 
-/* 整机初始化、任务调度与安全状态：接口已建立，功能尚未实现。 */
+/* 当前只调度 DDS 台架测试与 LED，整机功能尚未实现。 */
 SgStatus App_Init(void);
 SgStatus App_Update(uint32_t now_ms);
 #endif
-
